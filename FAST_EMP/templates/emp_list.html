@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+function fn_add(){
+	location.href = "emp_add" 
+}
+</script>
+</head>
+<body>
+<h2>EMPLIST ♪( 'ω' و(و"</h2>
+
+<table border="1">
+	<tr>
+		<th>e_id</th>
+		<th>e_name</th>
+		<th>sex</th>
+		<th>addr</th>
+	</tr>
+{% for emp in emps%}
+	<tr>
+	    <td><a href="emp_detail?e_id={{ emp.e_id }}">{{ emp.e_id }}</a></td>
+	    <td>{{ emp.e_name }}</td>
+	    <td>{{ emp.sex }}</td>
+	    <td>{{ emp.addr }}</td>
+	</tr>
+{% endfor %}
+	<tr>
+		<td><input type="button" value="추가" onclick="fn_add()"/></td>
+	</tr>
+</table>
+
+</body>
+</html>

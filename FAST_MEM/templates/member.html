@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="static/js/jquery-3.6.1.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    fn_list();
+});
+
+function fn_list(){
+	$.ajax({
+        url: "member_selects",
+        type: "get",
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+        	var members = data;
+        	
+        	var txt = "";
+        	
+        	for(var i=0; i<members.length;i++){
+        		var member = members[i]
+	        	txt += `
+	        	<tr>
+	    		    <td><a href="javascript:fn_one('${member.m_seq}')">${member.m_seq}</a></td>
+	    		    <td>${member.m_name}</td>
+	    		    <td>${member.tel}</td>
+	    		    <td>${member.army_yn}</td>
+	    		</tr>
+	        	
+	        	`;
+        	}
+        	
+        	$("#mytbody").html(txt);
+//             console.log(txt)
+        },
+    });
+	
+}
+
+function fn_one(m_seq){
+	var params = JSON.stringify({
+			'm_seq':m_seq
+	});
+	
+	console.log("m_seq", m_seq);
+	$.ajax({
+        url: "member_select",
+        type: "post",
+        data:  params,
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+        	var member = data
+        	console.log(data);
+        	$("#m_seq").val(member.m_seq);
+        	$("#m_name").val(member.m_name);
+        	$("#tel").val(member.tel);
+        	$("#army_yn").val(member.army_yn);
+        	
+        }
+    });
+}
+
+function fn_insert(){
+	var params = JSON.stringify({
+		'm_seq':$("#m_seq").val(),
+		'm_name':$("#m_name").val(),
+		'tel':$("#tel").val(),
+		'army_yn':$("#army_yn").val(),
+	});
+
+	$.ajax({
+	    url: "member_insert",
+	    type: "post",
+	    data:  params,
+	    dataType: "json",
+	    contentType: "application/json",
+	    success: function(data) {
+	    	var member = data
+	    	console.log(data);
+	    	var cnt = data;
+	    	if(cnt == 1){
+	    		fn_list();
+	    		$("#m_seq").val("");
+	    		$("#m_name").val("");
+	    		$("#tel").val("");
+	    		$("#army_yn").val("");
+	    	}else{
+	    		alert("추가도중 문제 발생 !!!")
+	    	}
+	    	
+	    }
+	});
+}
+
+function fn_update(){
+	var params = JSON.stringify({
+		'm_seq':$("#m_seq").val(),
+		'm_name':$("#m_name").val(),
+		'tel':$("#tel").val(),
+		'army_yn':$("#army_yn").val(),
+	});
+
+	console.log("m_seq", m_seq);
+	$.ajax({
+	    url: "member_update",
+	    type: "post",
+	    data:  params,
+	    dataType: "json",
+	    contentType: "application/json",
+	    success: function(data) {
+	    	var member = data
+	    	var cnt = data;
+	    	if(cnt == 1){
+	    		fn_list();
+	    		$("#m_seq").val("");
+	    		$("#m_name").val("");
+	    		$("#tel").val("");
+	    		$("#army_yn").val("");
+	    	}else{
+	    		alert("수정도중 문제 발생 !!!")
+	    	}
+	    	
+	    }
+	});
+}
+
+function fn_delete(){
+	var params = JSON.stringify({
+		'm_seq':$("#m_seq").val(),
+	});
+
+	console.log("m_seq", m_seq);
+	$.ajax({
+	    url: "member_delete",
+	    type: "post",
+	    data:  params,
+	    dataType: "json",
+	    contentType: "application/json",
+	    success: function(data) {
+	    	var member = data
+	    	var cnt = data;
+	    	if(cnt == 1){
+	    		fn_list();
+	    		$("#m_seq").val("");
+	    		$("#m_name").val("");
+	    		$("#tel").val("");
+	    		$("#army_yn").val("");
+	    	}else{
+	    		alert("삭제도중 문제 발생 !!!")
+	    	}
+	    	
+	    }
+	});
+}
+
+</script> 
+</head>
+<body>
+<h2>MEMBER_LIST ♪( 'ω' و(و"</h2>
+
+<table border="1">
+	<thead>
+		<tr>
+			<td>회원번호</td>
+			<td>이름</td>
+			<td>연락처</td>
+			<td>군필</td>
+		</tr>
+	</thead>
+	<tbody id="mytbody">
+		<tr>
+		    <td>1</td>
+		    <td>1</td>
+		    <td>1</td>
+		    <td>1</td>
+		</tr>
+	</tbody>
+</table>
+
+<br>
+
+<table border="1">
+	<tr>
+		<td>회원번호</td>
+		<td>
+			<input type="text" id="m_seq" readonly />
+		</td>
+	</tr>
+	<tr>
+		<td>이름</td>
+		<td>
+			<input type="text" id="m_name" />
+		</td>
+	</tr>
+	<tr>
+		<td>연락처</td>
+		<td>
+			<input type="text" id="tel" />
+		</td>
+	</tr>
+	<tr>
+		<td>군필</td>
+		<td>
+			<input type="text" id="army_yn" />
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<input type="button" value="추가" onclick="fn_insert()"/>
+			<input type="button" value="수정" onclick="fn_update()" />
+			<input type="button" value="삭제" onclick="fn_delete()"/>
+		</td>
+	</tr>
+
+</table>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="static/js/jquery-3.6.1.js"></script>
+<script type="text/javascript">
+
+var flag_ing = true;
+
+var step = 0;
+
+var s1i = -1; //첫번째 사진 (0,1) 할 때 0
+var s1j = -1; //첫번째 사진 (0,1) 할 때 1
+var s1v = -1; //첫번째 사진의 번호
+var s2i = -1; //두번째 사진 (0,1) 할 때 0
+var s2j = -1; //두번째 사진 (0,1) 할 때 1
+var s2v = -1; //두번째 사진의 번호
+
+var img2D = [
+	[1, 1, 2, 2],
+	[3, 3, 4, 4],
+	[5, 5, 6, 6],
+	[7, 7, 8, 8]
+];
+
+var cvr2D = [
+	[0, 0, 0, 0],
+	[0, 0, 0, 0],
+	[0, 0, 0, 0],
+	[0, 0, 0, 0]
+];
+
+var dsp2D = [
+	[0, 0, 0, 0],
+	[0, 0, 0, 0],
+	[0, 0, 0, 0],
+	[0, 0, 0, 0]
+];
+
+
+function myinit(){
+	shuffle();
+	patchIJEvent();
+}
+
+function setDsp2D(){
+	for (var i = 0; i < 4; i++) {
+		for (var j = 0; j < 4; j++) {
+	
+			if (cvr2D[i][j] == 1) {
+				dsp2D[i][j] = img2D[i][j];
+				
+			}else{
+				dsp2D[i][j]=0;
+			}
+		}
+	}
+	
+	if(step==0){
+		dsp2D[s1i][s1j]=s1v;
+	}
+	if(step==1){
+		dsp2D[s1i][s1j]=s1v;
+		dsp2D[s2i][s2j]=s2v;
+	}
+	
+}
+
+function myclick(e){
+	if(!flag_ing){
+		return;
+	}
+	
+	if(step == 2){
+		return ;
+	}
+	
+// 	console.log(e.target.alt);
+	var alt = e.target.alt.split(",");
+	var i = parseInt(alt[0]);
+	var j = parseInt(alt[1]);
+	
+	if(step==0){
+		s1i = i;
+		s1j = j;
+		s1v = img2D[i][j];
+	}
+	if(step==1){
+		if(s1i==i && s1j==j){
+			return;
+		}
+		s2i = i;
+		s2j = j;
+		s2v = img2D[i][j];
+		
+	}
+	
+	setDsp2D();
+	
+	render();
+	nextStep();
+	console.log("step", step);
+	
+	if(step == 2){
+		setTimeout(gostep3, 500)
+	}
+	
+// 	console.log(i, j)
+}
+
+function gostep3(){
+	
+	var disp = parseInt($("#mydisp").html())
+	
+	if(s1v == s2v){
+		cvr2D[s1i][s1j] = 1;
+		cvr2D[s2i][s2j] = 1;
+		disp -= 2;
+		$("#mydisp").html(disp);
+	}
+	
+	setDsp2D();
+	render();
+	
+	var cnt_final = 0;
+	
+	
+	for (var i = 0; i < 4; i++) {
+		for (var j = 0; j < 4; j++) {
+			if(cvr2D[i][j]==1){
+				cnt_final++;
+				console.log("cnt_final??" + cnt_final);
+			}
+		}
+	}
+	if(cnt_final==16){
+		flag_ing = false;
+		alert("이겼당 !!");
+		
+	}
+	
+	s1i = -1;
+	s1j = -1;
+	s1v = -1;
+	s2i = -1;
+	s2j = -1;
+	s2v = -1;
+	
+	nextStep();
+	console.log("hi")
+	console.log(cvr2D);
+	
+	
+}
+
+function nextStep(){
+	if(step == 1){
+		step = 2;
+	}else if(step == 2){
+		step = 0;
+	}else if(step ==0 ){
+		step = 1;
+	}
+
+}
+function patchIJEvent() {
+	for (var i = 0; i < 4; i++) {
+		for (var j = 0; j < 4; j++) {
+			$("img").eq(i * 4 + j).attr("alt", i + ", " + j)
+		}
+	}
+	$("img").bind("click", function(event) { myclick(event); });
+}
+
+function shuffle() { // 섞는 방법2
+
+	for (var i = 0; i < 100; i++) {
+		var rndi = parseInt(Math.random() * 4);
+		var rndj = parseInt(Math.random() * 4);
+		var a = img2D[rndi][rndj];
+		var b = img2D[0][0];
+		img2D[0][0] = a;
+		img2D[rndi][rndj] = b;
+
+	}
+
+	console.log("img2D ", img2D);
+}
+
+// 	function shuffle() { 섞는 방법1
+// 		arry16 = [  1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8 ];
+
+// 		for (var i = 0; i < 100; i++) {
+// 			var rnd = Math.floor(Math.random() * 16);
+// 			var a = arry16[0];
+// 			var b = arry16[rnd];
+// 			arry16[0] = b;
+// 			arry16[rnd] = a;
+// 		}
+// 		for (var i = 0; i < 4; i++) {
+// 			for (var j = 0; j < 4; j++) {
+// 				img2D[i][j]=arry16[i*4+j];
+// 			}
+// 		}
+
+// 		console.log("img2D ", img2D);
+// 	}
+
+function render() {
+	// 	alert("호출 되나 ?!")
+	// 	document.getElementById('hi').src = 'static/img/1.png'; 고민의 흔적ㄱ,,,,,ㅋㅅㅋ
+
+	for (var i = 0; i < 4; i++) {
+		for (var j = 0; j < 4; j++) {
+			$("img").eq(i * 4 + j).attr("src", "static/img/" + dsp2D[i][j] + ".png");
+		}
+	}
+
+	// 	$("img").eq(0*4+0).attr("src", "static/img/"+img2D[0][0]+".png");
+	// 	$("img").eq(0*4+1).attr("src", "static/img/"+img2D[0][1]+".png");
+	// 	$("img").eq(0*4+2).attr("src", "static/img/"+img2D[0][2]+".png");
+	// 	$("img").eq(0*4+3).attr("src", "static/img/"+img2D[0][3]+".png");
+
+	// 	$("img").eq(1*4+0).attr("src", "static/img/"+img2D[1][0]+".png");
+	// 	$("img").eq(1*4+1).attr("src", "static/img/"+img2D[1][1]+".png");
+	// 	$("img").eq(1*4+2).attr("src", "static/img/"+img2D[1][2]+".png");
+	// 	$("img").eq(1*4+3).attr("src", "static/img/"+img2D[1][3]+".png");
+
+	// 	$("img").eq(8).attr("src", "static/img/"+img2D[2][0]+".png");
+	// 	$("img").eq(9).attr("src", "static/img/"+img2D[2][1]+".png");
+	// 	$("img").eq(10).attr("src", "static/img/"+img2D[2][2]+".png");
+	// 	$("img").eq(11).attr("src", "static/img/"+img2D[2][3]+".png");
+
+	// 	$("img").eq(12).attr("src", "static/img/"+img2D[3][0]+".png");
+	// 	$("img").eq(13).attr("src", "static/img/"+img2D[3][1]+".png");
+	// 	$("img").eq(14).attr("src", "static/img/"+img2D[3][2]+".png");
+	// 	$("img").eq(15).attr("src", "static/img/"+img2D[3][3]+".png");
+}
+</script>
+</head>
+<body onload="myinit()">
+
+<table>
+	<tr>
+		<td>남은 개수</td>
+		<td>
+			<div id="mydisp">16</div>
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td><img src="static/img/0.png" id="hi"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+	</tr>
+	<tr>
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+	</tr>
+	<tr>
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+	</tr>
+	<tr>
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+		<td><img src="static/img/0.png"> </td>	
+	</tr>
+</table>
+
+
+
+</body>
+</html>

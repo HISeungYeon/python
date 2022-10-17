@@ -9,13 +9,16 @@
 	}
 	
 	function fn_delete(){
-		location.href = "emp_delete?e_id={{emp.e_id}}" 
+// 		location.href = "emp_delete?e_id={{emp.e_id}}" 
+		document.frm.submit();
+		
 	}
 </script>
 </head>
 <body>
 <h2>EMP_DETAIL ♪( 'ω' و(و"</h2>
-
+<form id="frm" name="frm" action="emp_delete" method="post">
+<input type="hidden" name="e_id" value="{{emp.e_id}}">
 <table border="1">
 	<tr>
 		<td>사원</td>
@@ -41,6 +44,7 @@
 	</tr>
 
 </table>
+</form>
 
 </body>
 </html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+.myit{
+	width:20px;
+}
+
+</style>
+<script type="text/javascript">
+function plus(){
+	var obj1 = document.querySelector("#it1");
+	var obj2 = document.querySelector("#it2");
+	var obj3 = document.querySelector("#it3");
+	var a1 = parseInt(obj1.value)
+	var a2 = parseInt(obj2.value)
+	var result = a1 + a2
+	obj3.value = result	
+	
+	console.log(a1)
+	console.log(a2)
+	console.log(result)
+}
+
+function minus(){
+	var obj1 = document.querySelector("#it1");
+	var obj2 = document.querySelector("#it2");
+	var obj3 = document.querySelector("#it3");
+	var a1 = parseInt(obj1.value)
+	var a2 = parseInt(obj2.value)
+	var result = a1 - a2
+	obj3.value = result	
+	
+	console.log(a1)
+	console.log(a2)
+	console.log(result)
+}
+function myltiply(){
+	var obj1 = document.querySelector("#it1");
+	var obj2 = document.querySelector("#it2");
+	var obj3 = document.querySelector("#it3");
+	var a1 = parseInt(obj1.value)
+	var a2 = parseInt(obj2.value)
+	var result = a1 * a2
+	obj3.value = result	
+	
+	console.log(a1)
+	console.log(a2)
+	console.log(result)
+}
+function divide(){
+	var obj1 = document.querySelector("#it1");
+	var obj2 = document.querySelector("#it2");
+	var obj3 = document.querySelector("#it3");
+	var a1 = parseInt(obj1.value)
+	var a2 = parseInt(obj2.value)
+	var result = a1 / a2
+	obj3.value = result	
+	
+	console.log(a1)
+	console.log(a2)
+	console.log(result)
+}
+</script>
+</head>
+<body>
+<table border="1">
+	<tr>
+		<td>
+			<input type="text" class="myit" id="it1" />
+		</td>
+		<td>
+			<input type="button" value="plus" onclick="plus()" /><br>
+			<input type="button" value="minus" onclick="minus()" /><br>
+			<input type="button" value="myltiply" onclick="myltiply()" /><br>
+			<input type="button" value="divide" onclick="divide()" /><br>
+		</td>
+		<td>
+			<input type="text" class="myit" id="it2" />
+		</td>
+		<td>
+			=
+		</td>
+		<td>
+			<input type="text" class="myit" id="it3" />
+		</td>
+	</tr>
+
+</table>
+
+</body>
+</html>

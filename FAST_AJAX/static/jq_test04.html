@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="/static/js/jquery-3.6.1.js"></script>
+<script type="text/javascript">
+function lotto(){
+	arry45 = [
+		1,2,3,4,5,      6,7,8,9,10,
+        11,12,13,14,15, 16,17,18,19,20,
+        21,22,23,24,25, 26,27,28,29,30,
+        31,32,33,34,35, 36,37,38,39,40,
+        41,42,43,44,45
+	]
+		
+		for(var i=0; i < 100; i++) {
+			var rnd = Math.floor(Math.random()*45);
+			var a = arry45[0];
+			var b = arry45[rnd];
+// 			console.log(b)		
+			arry45[0]=b;
+			arry45[rnd]=a;
+		}
+	
+	var obj = document.querySelectorAll(".mydiv");
+	obj[0].innerHTML = arry45[0]
+	obj[1].innerHTML = arry45[1]
+	obj[2].innerHTML = arry45[2]
+	obj[3].innerHTML = arry45[3]
+	obj[4].innerHTML = arry45[4]
+	obj[5].innerHTML = arry45[5]
+	
+	$(".mydiv").ep(0).html(arry45[0]);
+	$(".mydiv").ep(1).html(arry45[1]);
+	$(".mydiv").ep(2).html(arry45[2]);
+	$(".mydiv").ep(3).html(arry45[3]);
+	$(".mydiv").ep(4).html(arry45[4]);
+	$(".mydiv").ep(5).html(arry45[5]);
+	
+}
+
+$(document).ready(function(){
+	$("#btn").bind("click", function() {
+		myclick()
+    });
+});
+</script>
+</head>
+<body>
+<table border="1">
+	<tr>
+		<td><div class="mydiv">__</div></td>
+		<td><div class="mydiv">__</div></td>
+		<td><div class="mydiv">__</div></td>
+		<td><div class="mydiv">__</div></td>
+		<td><div class="mydiv">__</div></td>
+		<td><div class="mydiv">__</div></td>
+	</tr>
+	<tr>
+		<td colspan="6">
+			<input type="button" id="btn" value="로또생성허기" />
+		</td>
+	</tr>
+	
+</table>
+
+
+</body>
+</html>

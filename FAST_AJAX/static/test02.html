@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+	function plus3(){
+		var obj = document.querySelector("#it");
+		var a = parseInt(obj.value) //number로 해도 ㄱㅊ
+		a += 3;
+		obj.value = a;
+	}
+</script>
+</head>
+<body>
+<input type="text" id="it" value="200" />
+
+<input type="button" value="plus3" onclick="plus3()"/>
+
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="/static/js/jquery-3.6.1.js"></script>
+<style type="text/css">
+.myit{
+	width:20px;
+}
+
+</style>
+<script type="text/javascript">
+function plus(){
+	var a1 = $("#it1").val();
+	var a2 = $("#it2").val();
+	
+	var result = a1 + a2
+	
+	$("#it3").val(result);
+}
+
+function minus(){
+	var a1 = $("#it1").val();
+	var a2 = $("#it2").val();
+	
+	var result = a1 - a2
+	
+	$("#it3").val(result);
+}
+function myltiply(){
+	var a1 = $("#it1").val();
+	var a2 = $("#it2").val();
+	
+	var result = a1 * a2
+	
+	$("#it3").val(result);
+}
+function divide(){
+	var a1 = $("#it1").val();
+	var a2 = $("#it2").val();
+	
+	var result = a1 / a2
+	
+	$("#it3").val(result);
+}
+
+$(document).ready(function(){
+	$("#plus").bind("click", function() {
+		plus()
+    });
+	$("#minus").bind("click", function() {
+		minus()
+    });
+	$("#myltiply").bind("click", function() {
+		myltiply()
+    });
+	$("#divide").bind("click", function() {
+		divide()
+    });
+});
+</script>
+</head>
+<body>
+<table border="1">
+	<tr>
+		<td>
+			<input type="text" class="myit" id="it1" />
+		</td>
+		<td>
+			<input type="button" id="plus" value="plus" /><br>
+			<input type="button" id="minus" value="minus" /><br>
+			<input type="button" id="myltiply" value="myltiply" /><br>
+			<input type="button" id="divide" value="divide" /><br>
+		</td>
+		<td>
+			<input type="text" class="myit" id="it2" />
+		</td>
+		<td>
+			=
+		</td>
+		<td>
+			<input type="text" class="myit" id="it3" />
+		</td>
+	</tr>
+
+</table>
+
+</body>
+</html>

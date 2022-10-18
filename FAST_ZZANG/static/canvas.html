@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+function myinit(){
+	var canvas = document.querySelector('canvas');
+	var ctx = canvas.getContext('2d');
+	ctx.beginPath();
+	ctx.arc(200, 200, 100, 0, Math.PI * 2); //중심의 위치, 반지름, 
+	ctx.stroke();
+// 	ctx.fillStyle = 'pink';
+    ctx.fill();
+    
+}
+
+</script>
+</head>
+<body onload="myinit()">
+
+<canvas id="mycan" width="500" height="500">
+
+</canvas>
+
+</body>
+</html>

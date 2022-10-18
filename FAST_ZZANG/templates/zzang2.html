@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<script src="static/js/jquery-3.6.1.js"></script>
 <script type="text/javascript">
 	var flag_ing = true;
 
@@ -16,17 +15,29 @@
 	var s2j = -1;
 	var s2v = -1;
 
-	var img2D = [ [ 1, 1, 2, 2 ], [ 3, 3, 4, 4 ], [ 5, 5, 6, 6 ],
-			[ 7, 7, 8, 8 ] ];
+	var img2D = [ 
+		[ 1, 1, 2, 2 ], 
+		[ 3, 3, 4, 4 ], 
+		[ 5, 5, 6, 6 ],
+		[ 7, 7, 8, 8 ] 
+	];
 
-	var cvr2D = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ],
-			[ 0, 0, 0, 0 ] ];
+	var cvr2D = [ 
+		[ 0, 0, 0, 0 ], 
+		[ 0, 0, 0, 0 ], 
+		[ 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0 ] 
+	];
 
-	var dsp2D = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ],
-			[ 0, 0, 0, 0 ] ];
+	var dsp2D = [ 
+		[ 0, 0, 0, 0 ], 
+		[ 0, 0, 0, 0 ], 
+		[ 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0 ]
+	];
 
 	function myinit() {
-		// 	shuffle();
+		shuffle();
 		patchIJEvent();
 	}
 
@@ -62,7 +73,6 @@
 			return;
 		}
 
-		// 	console.log(e.target.alt);
 		var alt = e.target.alt.split(",");
 		var i = parseInt(alt[0]);
 		var j = parseInt(alt[1]);
@@ -92,21 +102,22 @@
 			setTimeout(gostep3, 500)
 		}
 
-		// 	console.log(i, j)
 	}
 
 	function gostep3() {
 
+		var obj_disp = document.querySelector("#mydisp");
+		
 		if (s1v == s2v) {
 			cvr2D[s1i][s1j] = 1;
 			cvr2D[s2i][s2j] = 1;
+			obj_disp.innerHTML -= 2
 		}
 
 		setDsp2D();
 		render();
 
 		var cnt_final = 0;
-
 		for (var i = 0; i < 4; i++) {
 			for (var j = 0; j < 4; j++) {
 				if (cvr2D[i][j] == 1) {
@@ -114,6 +125,11 @@
 				}
 			}
 		}
+		
+		
+// 		obj_disp.innerHTML = 16-cnt_final 
+		
+		
 		if (cnt_final == 16) {
 			flag_ing = false;
 			alert("이겼당 !!");
@@ -144,14 +160,17 @@
 
 	}
 	function patchIJEvent() {
+		var imgs = document.querySelectorAll("img");
+		
 		for (var i = 0; i < 4; i++) {
 			for (var j = 0; j < 4; j++) {
-				$("img").eq(i * 4 + j).attr("alt", i + ", " + j)
+				imgs[i * 4 + j].alt = i + ", " + j;
+				imgs[i * 4 + j].addEventListener('click', function(event){
+			        myclick(event);
+			    }); 
 			}
 		}
-		$("img").bind("click", function(event) {
-			myclick(event);
-		});
+		
 	}
 
 	function shuffle() { // 섞는 방법2
@@ -170,13 +189,11 @@
 	}
 
 	function render() {
+		var imgs = document.querySelectorAll("img");
 
 		for (var i = 0; i < 4; i++) {
 			for (var j = 0; j < 4; j++) {
-				// $("img").eq(i * 4 + j).attr("src", "static/img/" + dsp2D[i][j] + ".png");
-				document.querySelector("img").src[i * 4 + j] = "static/img/" + dsp2D[i][j] + ".png"
-				console.log("이미지경로는?" + i * 4 + j);
-
+				imgs[i * 4 + j].src = "static/img/" + dsp2D[i][j] + ".png"
 			}
 		}
 	}

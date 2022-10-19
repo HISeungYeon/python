@@ -34,8 +34,12 @@ manager = ConnectionManager()
 
 @app.get("/")
 async def socket(request: Request):
-    # /templates/client.html파일을 response함
     return templates.TemplateResponse("socket.html", {"request":request})
+
+
+@app.get("/card")
+async def card(request: Request):
+    return templates.TemplateResponse("card.html", {"request":request})
 
 
 @app.websocket("/ws/{client_id}")
@@ -44,15 +48,15 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
     try:
         while True:
             data = await websocket.receive_text()
+            print("data", data)
 #            await manager.send_personal_message(f"You wrote: {data}", websocket)
-            await manager.broadcast(f"Client #{client_id} says: {data}")
+            await manager.broadcast(f"{data}") 
+            # 접속한 사람에게 모두 보낸다! broadcast!
     except WebSocketDisconnect:
+        print("error")
         manager.disconnect(websocket)
-        await manager.broadcast(f"Client #{client_id} left the chat")
+        await manager.broadcast(f"error")
         
  
- 
- 
- 
         
-# uvicorn mysocket:app --reload
+# uvicorn mysocket:app --reload --host=192.168.142.18

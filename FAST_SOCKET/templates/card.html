@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+.can{
+	width: 170px;
+	height: 170px;
+}
+</style>
+<script>
+	var client_id = Date.now()
+	
+	var flag_ing = false;
+
+	var step = 0;
+
+	var s1i = -1;
+	var s1j = -1;
+	var s1v = -1;
+	var s2i = -1;
+	var s2j = -1;
+	var s2v = -1;
+
+	var img2D = [ 
+		[ 1, 1, 2, 2 ], 
+		[ 3, 3, 4, 4 ], 
+		[ 5, 5, 6, 6 ],
+		[ 7, 7, 8, 8 ] 
+	];
+
+	var cvr2D = [ 
+		[ 0, 0, 0, 0 ], 
+		[ 0, 0, 0, 0 ], 
+		[ 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0 ] 
+	];
+
+	var dsp2D = [ 
+		[ 0, 0, 0, 0 ], 
+		[ 0, 0, 0, 0 ], 
+		[ 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0 ]
+	];
+	
+	var ws = new WebSocket(`ws://192.168.142.18:8000/ws/${client_id}`);
+	ws.onmessage = function(event) {
+		var txt = event.data;
+		console.log("onmessage", txt)
+		
+		var arr_txt = txt.split(":");
+		if(arr_txt[0]=="ready"){
+			reiv_ready(arr_txt[1]);
+		}
+		if(arr_txt[0]=="start"){
+			reiv_start();
+		}
+		if(arr_txt[0]=="score"){
+			reiv_score(arr_txt[1],arr_txt[2]);
+		}
+		if(arr_txt[0]=="display"){
+			reiv_display(arr_txt[1],arr_txt[2]);
+		}
+		if(arr_txt[0]=="win"){
+			reiv_win(arr_txt[1],arr_txt[2]);
+		}
+		
+//  		send_start();
+		
+	};
+	
+	function reiv_win(user,info){
+		alert(user + "님 승리 !!")
+		flag_ing = false;
+	}
+	
+	
+	function reiv_display(user,info){
+		var idx = indexUser(user);
+		var arr = info.split(",")
+		
+		var canvas = document.querySelectorAll(".can")[idx];
+		var ctx = canvas.getContext('2d');
+		
+	    for(var i=0; i < 4; i++) {
+	        for(var j = 0; j < 4; j++){
+	        	ctx.fillStyle = 'yellow';
+	        	if(arr[i * 4 + j] == 0){
+	        		ctx.fillStyle = 'black';
+	        	}
+	        	ctx.fillRect(j*60, i*30, 55, 27);
+	        	
+	        }
+	    }
+	}
+	
+	function reiv_score(user,score){
+		var idx = indexUser(user);
+		var obj_scores = document.querySelectorAll(".score");
+		obj_scores[idx].innerHTML = score;
+	}
+	
+	function reiv_start(){
+		flag_ing = true;
+	}
+	
+	function send_start(){
+// 		flag_ing = true;
+		sendMessage("start:")
+	}
+	
+	var idx_user = 0;
+	var users = [];
+	function reiv_ready(user){
+		var obj_users = document.querySelectorAll(".user");
+		
+		var idx = indexUser(user);
+		if(idx == -1){
+			users.push(user);
+		}else{
+			alert("이름 중복!! 이름을 바꿔주세요! (☉ε　⊙ﾉ)ﾉ");
+		}
+		
+		for(var i=0;i<users.length;i++){
+			obj_users[i].innerHTML = users[i];
+		}
+		
+	}
+	
+	function indexUser(user){
+		var idx = -1;
+		for(var i=0;i<users.length;i++){
+			if(users[i] == user){
+				return i;
+			}
+		}
+		return idx;
+		
+	}
+	
+	function sendMessage(txt) {
+		console.log("sendMessage", txt)
+		ws.send(txt)
+		
+		
+	}
+	
+	function send_ready(){
+		var obj_user = document.querySelector("#user");
+		var user = obj_user.value;
+		
+		sendMessage("ready:"+user)
+		
+	}
+
+// 	-------------------------------------------------------------
+	
+
+	function myinit() {
+		shuffle();
+		patchIJEvent();
+	}
+
+	function setDsp2D() {
+		for (var i = 0; i < 4; i++) {
+			for (var j = 0; j < 4; j++) {
+
+				if (cvr2D[i][j] == 1) {
+					dsp2D[i][j] = img2D[i][j];
+
+				} else {
+					dsp2D[i][j] = 0;
+				}
+			}
+		}
+
+		if (step == 0) {
+			dsp2D[s1i][s1j] = s1v;
+		}
+		if (step == 1) {
+			dsp2D[s1i][s1j] = s1v;
+			dsp2D[s2i][s2j] = s2v;
+		}
+
+	}
+
+	function myclick(e) {
+		if (!flag_ing) {
+			return;
+		}
+
+		if (step == 2) {
+			return;
+		}
+
+		var alt = e.target.alt.split(",");
+		var i = parseInt(alt[0]);
+		var j = parseInt(alt[1]);
+
+		if (step == 0) {
+			s1i = i;
+			s1j = j;
+			s1v = img2D[i][j];
+		}
+		if (step == 1) {
+			if (s1i == i && s1j == j) {
+				return;
+			}
+			s2i = i;
+			s2j = j;
+			s2v = img2D[i][j];
+
+		}
+
+		setDsp2D();
+
+		render();
+		nextStep();
+		console.log("step", step);
+
+		if (step == 2) {
+			setTimeout(gostep3, 300)
+		}
+
+	}
+
+	function gostep3() {
+
+		var obj_disp = document.querySelector("#mydisp");
+		
+		if (s1v == s2v) {
+			cvr2D[s1i][s1j] = 1;
+			cvr2D[s2i][s2j] = 1;
+// 			obj_disp.innerHTML -= 2
+		}
+
+		setDsp2D();
+		render();
+
+		var cnt_final = 0;
+		for (var i = 0; i < 4; i++) {
+			for (var j = 0; j < 4; j++) {
+				if (cvr2D[i][j] == 1) {
+					cnt_final++;
+				}
+			}
+		}
+		
+		obj_disp.innerHTML = 16-cnt_final 
+		
+		var obj_user = document.querySelector("#user");
+		sendMessage("score:" + obj_user.value + ":" + (16-cnt_final));
+		sendMessage("display:" + obj_user.value + ":" + (cvr2D+""));
+		
+		if (cnt_final == 16) {
+			sendMessage("win:" + obj_user.value + ":" + (cnt_final));
+			flag_ing = false;
+// 			alert("이겼당 !!");
+
+		}
+
+		s1i = -1;
+		s1j = -1;
+		s1v = -1;
+		s2i = -1;
+		s2j = -1;
+		s2v = -1;
+
+		nextStep();
+		console.log("hi")
+		console.log(cvr2D);
+
+	}
+
+	function nextStep() {
+		if (step == 1) {
+			step = 2;
+		} else if (step == 2) {
+			step = 0;
+		} else if (step == 0) {
+			step = 1;
+		}
+
+	}
+	function patchIJEvent() {
+		var imgs = document.querySelectorAll("img");
+		
+		for (var i = 0; i < 4; i++) {
+			for (var j = 0; j < 4; j++) {
+				imgs[i * 4 + j].alt = i + ", " + j;
+				imgs[i * 4 + j].addEventListener('click', function(event){
+			        myclick(event);
+			    }); 
+			}
+		}
+		
+	}
+
+	function shuffle() { // 섞는 방법2
+
+		for (var i = 0; i < 100; i++) {
+			var rndi = parseInt(Math.random() * 4);
+			var rndj = parseInt(Math.random() * 4);
+			var a = img2D[rndi][rndj];
+			var b = img2D[0][0];
+			img2D[0][0] = a;
+			img2D[rndi][rndj] = b;
+
+		}
+
+		console.log("img2D ", img2D);
+	}
+
+	function render() {
+		var imgs = document.querySelectorAll("img");
+
+		for (var i = 0; i < 4; i++) {
+			for (var j = 0; j < 4; j++) {
+				imgs[i * 4 + j].src = "static/img/" + dsp2D[i][j] + ".png"
+			}
+		}
+	}
+	
+	
+</script>
+</head>
+<body onload="myinit()">
+
+	<table border="1">
+		<tr>
+			<td>
+			
+				<table>
+					<tr>
+						<td>남은 개수</td>
+						<td>
+							<div id="mydisp">16</div>
+						</td>
+						<td>
+							<input type="text" id="user" />
+						</td>
+						<td>
+							<input type="button" value="ready" onclick="send_ready()"/>
+						</td>
+						<td>
+							<input type="button" value="start" onclick="send_start()"/>
+						</td>
+					</tr>
+				</table>
+
+				<table>
+					<tr>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+					</tr>
+					<tr>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+					</tr>
+					<tr>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+					</tr>
+					<tr>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+						<td><img src="static/img/0.png"></td>
+					</tr>
+				</table>
+			</td>
+			<td>
+				<table border="1">
+					<tr>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+					</tr>
+					<tr>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+					</tr>
+					<tr>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+					</tr>
+					<tr>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+					</tr>
+					<tr>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+					</tr>                               
+					<tr>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+					</tr>
+					<tr>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+						<td><span class="user">_</span> <span class="score">_</span></td>
+					</tr>                               
+					<tr>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+						<td><canvas class="can"></canvas></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+
+<!-- 	<a href="javascript:sendMessage(event)">send</a> -->
+
+
+
+</body>
+</html>
